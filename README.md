@@ -16,7 +16,7 @@ BERT (Bidirectional Encoder Representations from Transformers) is a pre-trained 
 
 ## I.  The Architecture diagram of BERT model 
 
-<center><font size="18"><img src="img/arch-fune-tuning-3.jpg"></font></center>
+<div align="center"><img src="img/arch-fune-tuning-3.jpg"></div>
 
 According to the diagram above, BERT has different layers like encoding, attention and classification layers
 
