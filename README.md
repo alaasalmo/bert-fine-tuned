@@ -146,6 +146,24 @@ Another important property of FFNs is that they allow parallel processing, makin
 Seq2Vector is a process for BERT transformer. Seq2Vector (sequence-to-vector): Input is a sequence → output is a single vector (fixed-size embedding).
 This is useful for classification, clustering, or similarity tasks, where you don’t need another sequence as output. Seq2Vector is not good in translation process like English to French for example. Seq2Vector is different than Seq2Seq. ChatGPT and LLAMA are Seq2Seq. this mean these two models are good for translation.  
 
+
+Example: ["the", "animal", "it"]
+
+1- In Bert: [CLS] the animal it [SEP]
+2- So after self-attention, you get:
+	3 tokens → 3 vectors
+	"the"    → v₁
+	"animal" → v₂
+	"it"     → v₃
+3- Attention with weights:
+the    → 0.1
+animal → 0.7
+it     → 0.2
+
+4- Vector output:
+
+output = 0.1·v_the + 0.7·v_animal + 0.2·v_it
+
 ## IV. The BERT types
 ### A. BERT Base & Large
 
