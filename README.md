@@ -1,6 +1,6 @@
 <p><cneter><img src=img\fine-tuning.jpg></cneter></p>
 
-<p><center>Fine tuning with Bert Transformer</center></p>
+# Fine tuning with Bert Transformer
 
 Fine-tuning is the process of training a Large Language Model (LLM) such as LLAMA, BERT, or ChatGPT on a specialized domain or task. These models begin as pre trained models, meaning they have already learned general language patterns from large datasets. After pre training, we can fine tune a model on a smaller, domain specific dataset to adapt it for a particular application. For example, we can take a base model like BERT and fine-tune it for a targeted task or specialized area.
 
@@ -16,7 +16,10 @@ BERT (Bidirectional Encoder Representations from Transformers) is a pre-trained 
 
 ## I.  The Architecture diagram of BERT model 
 
-<div align="center"><img src="img/arch-fune-tuning-3.jpg"></div>
+<!--<img src="img/arch-fune-tuning-3.jpg"></div> -->
+Before diving into fine tuning, we have to understand the archtecture diagram for Bert.
+
+<div align="center"><img src="img/bert-arch.png"></div>
 
 According to the diagram above, BERT has different layers like encoding, attention and classification layers
 
@@ -26,11 +29,64 @@ The input is tokenized text, broken into tokens (words, sub words, or characters
 
 #### 2. Encoding Layer
 
-This layer transforms the input tokens into dense vector representations (embeddings).
+This layer transforms the input tokens into dense vector representations (embeddings). After the encoding, we should specify the position for each token. After that we have to combine the the embeding with position
 
-#### 3. Attention Layer (Self-Attention)
+Please check the diagram below:
 
-Each word attends to (looks at) all other words in the sentence to understand context.
+<div align="center"><img src="img/steps-encodinging.png"></div>
+
+
+#### 3. Transformer blocks
+A. Attention and multi-attention layer
+
+- Attention Layer (Self-Attention)
+Each word attends to (looks at) all other words in the sentence to understand context. 
+
+Why we call it Self-Attention: Queries, Keys, and Values all come from the same sentence and each word attends to other words in itself
+
+In Scaled Dot-Product Attention (the core inside MHA), the attention weights are computed. By using three values Q, K and V
+See this example. In real life the three values with have matrix to calculate the weight. 
+
+Q (Query): “What am I looking for?”
+
+K (Key): “What features do you have?”
+
+V (Value): “What content should I propagate based on attention?”
+
+Intuitively: the query asks a question, the keys provide context, and the values provide the actual information to mix.
+
+In the example below explain more:
+
+<div align="center"><img src="img/self-attention.png"></div>
+
+- Multi-attention
+In Bert each self-Attension is header. Bert can run many headers in parallel.   
+
+#### B. Residual + LayerNorm
+
+Residual (add) connections:
+
+The core problem: why gradients struggle in deep networks. In very deep models (like Transformers with 12–96 layers):
+Gradients are computed using backpropagation. Each layer multiplies gradients by weights and derivatives
+
+To solve this issue, we will do the following steps:
+
+1- Group the layers to Block. The block contains many layers
+2- We create to paths First path is regulare path way or longer pathway Second one is short cut pathway (skip connections)
+3- The input in each block is the addtion of short cut pathway and long pathway (Addition math or concat). Math is better because in concat, the size of layer will change. In the transfoermer, we use math addition
+
+Advantage:
+1- Better Gradian flow
+2- Faster Learner 
+3- Enables deeper learners
+
+
+<p><cneter><img src=img\Residual-Connections.jpg></cneter></p>
+
+After multi-head attention, Residual + LayerNorm starts. 
+Residual: Adds the original input XXX to the MHA output.
+LayerNorm: Normalizes the sum for stable training.
+
 
 #### 4. Transformer Blocks (Stacked Layers)
 
