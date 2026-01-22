@@ -36,7 +36,7 @@ Please check the diagram below:
 <div align="center"><img src="img/steps-encodinging.png"></div>
 
 
-#### 3. Transformer blocks
+#### 3. Transformer blocks (architecture)
 A. Attention and multi-attention layer
 
 - Attention Layer (Self-Attention)
@@ -64,7 +64,7 @@ In Bert each self-Attension is header. Bert can run many headers in parallel.
 
 #### B. Residual + LayerNorm
 
-Residual (add) connections:
+<u>Residual</u> (add) connections:
 
 The core problem: why gradients struggle in deep networks. In very deep models (like Transformers with 12–96 layers):
 Gradients are computed using backpropagation. Each layer multiplies gradients by weights and derivatives
@@ -72,66 +72,43 @@ Gradients are computed using backpropagation. Each layer multiplies gradients by
 To solve this issue, we will do the following steps:
 
 1- Group the layers to Block. The block contains many layers
+
 2- We create to paths First path is regulare path way or longer pathway Second one is short cut pathway (skip connections)
+
 3- The input in each block is the addtion of short cut pathway and long pathway (Addition math or concat). Math is better because in concat, the size of layer will change. In the transfoermer, we use math addition
 
 Advantage:
+
 1- Better Gradian flow
+
 2- Faster Learner 
+
 3- Enables deeper learners
 
 
 <p><cneter><img src=img\Residual-Connections.jpg></cneter></p>
 
-After multi-head attention, Residual + LayerNorm starts. 
-Residual: Adds the original input XXX to the MHA output.
-LayerNorm: Normalizes the sum for stable training.
+<u>LayerNorm</u> fixes this immediately, ensuring:
 
+- stable training
+- faster convergence
 
-#### 4. Transformer Blocks (Stacked Layers)
+Why we need Normolization during training:
+After residual,the Values can get too large or too small. This causes unstable gradients and slow learning. For this reaso, the normolization fixes the issue. 
 
-BERT has 12 transformer blocks in BERT-Base, and 24 in BERT-Large.
+The steps of normolization is:
 
-#### 5. Classification Layer (Task-specific Head)
+Step 1: Find the mean
 
-On top of BERT, a simple dense layer is added for downstream tasks.
-Example:
-For sentiment classification, it predicts positive/negative.
-For question answering, it predicts start and end tokens of the answer.
-Uses the special [CLS] token representation for classification.
+Step 2: Subtract the mean (center the values)
 
-#### 6. Output Layer
+Step 3: Find the variance
 
-Final prediction based on the task:
-Class probabilities (e.g., positive vs. negative sentiment),
-Answer spans (start/end positions in QA),
-Next sentence prediction (original pretraining objective).
+Step 4: Find the standard deviation
 
-## II. Transformer blocks in BERT
+Step 5: Divide by the standard deviation (normalize)
 
-Bert transformation contains 6,12, 24 Transformer blocks depending  on the type of BERT such as DistilBERT , BERT Base and BERT Large.
-
-<p><cneter><img src=img\block-transformer.jpg></cneter></p>
-
-The transformer block contains of two parts in each transformer block.
-
-<b>The first part is attention head (multi-head attentions)</b> 
-In Scaled Dot-Product Attention (the core inside MHA), the attention weights are computed. By using three values Q, K and V
-See this example. In real life the three values with have matrix to calculate the weight. 
-
-Q (Query): “What am I looking for?”
-
-K (Key): “What features do you have?”
-
-V (Value): “What content should I propagate based on attention?”
-
-Intuitively: the query asks a question, the keys provide context, and the values provide the actual information to mix.
-
-After multi-head attention, Residual + LayerNorm starts. 
-Residual: Adds the original input XXX to the MHA output.
-LayerNorm: Normalizes the sum for stable training.
-  
-<b>The second part is Feed-Forward Network (FFN)</b> 
+#### C. Feed-Forward Network (FFN)
 
 Before explaining FFNs, let’s quickly review the structure of a neural network. A neural network is typically made up of three parts: an input layer, one or more hidden layers, and an output layer. Each node (neuron) in the hidden layer applies either a linear or non-linear function to the input it receives.
 An FFN is the simplest type of artificial neural network. In an FFN, data flows in only one direction: from the input → through the hidden layers → to the output. 
@@ -140,6 +117,19 @@ There are no loops or feedback connections.
 Each node in a layer performs a linear transformation (matrix multiplication plus bias), followed by a non-linear activation function such as ReLU, sigmoid, or tanh.
 The information always moves forward only; it never cycles back. Because of this, FFNs have no memory of past inputs—they process each input independently.
 Another important property of FFNs is that they allow parallel processing, making them very well-suited for GPU acceleration.
+
+In the diagram below shows one example of FFN with input, hidden layers and output. Also it shows different activation functions for each neuron.
+<p><cneter><img src=img\ffn.jpg></cneter></p>
+
+After we explain about the architecture of transformer layer blocks. We will have two kinds of blocks in the Bert transformer.
+BERT has 12 transformer blocks in BERT-Base, and 24 in BERT-Large.
+
+#### 5. Output Layer
+
+Final prediction based on the task:
+Class probabilities (e.g., positive vs. negative sentiment),
+Answer spans (start/end positions in QA),
+Next sentence prediction (original pretraining objective).
 
 ## III.The Seq2Vector in BERT
 
@@ -180,8 +170,25 @@ output = 0.1·v_the + 0.7·v_animal + 0.2·v_it
 
 Because of BERT Base is lighter than BERT Large, for this reason the BERT Large is more accurate in the result than BERT Base.
 
-
 ### B. DistilBERT
+
+DistilBERT is a smaller, faster, and lighter version of BERT designed to retain most of BERT’s language understanding capabilities while being more efficient. It was introduced by Hugging Face in 2019.
+Now we can go deeper to understand the differences between Bert-base and DistilBERT. The DistilBERT has three main parts: 
+
+A. Teacher Bert. It’s base Bert. 
+
+B. Student Bert. It’s Distal Bert. 
+
+C. Three Loss functions (Distillation Loss, Consine Loss and MLM Loss) 
+
+
+<b>Distillation loss</b> is the loss used in knowledge distillation, where a large model (teacher) trains a smaller model (student) by transferring its "knowledge.". Instead of training only on the correct labels, the student learns from the teacher's output probabilities (soft predictions).
+
+<b>Consine loss</b> measures how similar two vectors are in direction. 
+
+<b>MLM Loss</b> teaches the model to: Understand context, Learn grammar + meaning and Predict words from surrounding text
+
+<p><cneter><img src=img\distil-bert-teacher-student.jpg></cneter></p>
 
 ## V.  Examples of BERT in python
 
