@@ -173,7 +173,11 @@ Because of BERT Base is lighter than BERT Large, for this reason the BERT Large 
 ### B. DistilBERT
 
 DistilBERT is a smaller, faster, and lighter version of BERT designed to retain most of BERT’s language understanding capabilities while being more efficient. It was introduced by Hugging Face in 2019.
-Now we can go deeper to understand the differences between Bert-base and DistilBERT. The DistilBERT has three main parts: 
+Now we can go deeper to understand the differences between Bert-base and DistilBERT. 
+
+Bert has 12 encoder layers (blocks) while Distlbert has 6 encoder layer (blocks). 
+
+The DistilBERT has three main parts: 
 
 A. Teacher Bert. It’s base Bert. 
 
